@@ -1,0 +1,144 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>lcy 健康系统</title>
+
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.5"></script> -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+
+
+</head>
+<body>
+
+
+<div id="app">
+    
+
+    <el-header>
+        健康体体检
+    </el-header>
+    <el-container>
+
+        <el-aside width="500px">        
+            <el-main>
+                左侧选择
+                <el-input v-model="form.f" placeholder="请输入姓名"></el-input>
+                <el-button type="primary" @click="serach">模糊查询</el-button>
+
+                <template>
+                    <el-table
+                        :data="fList"
+                        style="width: 100%">
+                        <!-- <el-table-column prop="id" label="id" > </el-table-column> -->
+                        <el-table-column prop="b" label="村名" > </el-table-column>
+                        <el-table-column prop="d" label="组名" > </el-table-column>
+                        <el-table-column prop="e" label="户主" > </el-table-column>
+                        <el-table-column prop="f" label="姓名" > </el-table-column>
+                
+                    </el-table>
+                </template>
+            </el-main>
+        </el-aside>
+        <el-main>
+            表格主体
+        </el-main>
+
+    </el-container>
+
+
+   
+
+
+</div>
+
+<script>
+
+    var Main = {
+        data() {
+            return {
+                loading:false,
+                url:'https://api.wenfree.cn',
+                fList:[],
+                data:[],
+                form: {
+                    f:'杨国珍',
+                },
+            };
+        },
+        created() {
+            console.log('created');
+        },
+        methods: {
+            serach(){
+                var self = this
+                const postData = {
+                    s:"App.Index.Select_where",
+                    table:'tj_lcy',
+                    page:1,
+                    size:99,
+                    where:JSON.stringify(this.form)
+                }
+                axios.post(this.url,postData)
+                        .then(function(response) {
+                            // console.log(response.data.data.data)
+                            self.fList = response.data.data.data
+
+                            console.log(self.fList)
+                        })
+            },
+            handleSelectionChange(){
+            },
+
+        }
+    };
+    var Ctor = Vue.extend(Main)
+    new Ctor().$mount('#app')
+
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
