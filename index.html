@@ -35,9 +35,8 @@
 
         <el-aside width="500px">        
             <el-main>
-                左侧选择
                 <el-input v-model="form.f" placeholder="请输入姓名"></el-input>
-                <el-button type="primary" @click="serach">模糊查询</el-button>
+                <el-button type="primary" style="width: 100%;margin-top: 5px;" @click="serach">模糊查询</el-button>
 
                 <template>
                     <el-table
@@ -54,10 +53,117 @@
             </el-main>
         </el-aside>
         <el-main>
-            表格主体
+            基本信息
+            <br/>
+            <template v-for="itme in BaseInfo">
+                <el-input v-model="info[itme.key]" style="width: 20%; margin-right: 3px;margin-bottom: 5px;" :placeholder="itme.title"></el-input>
+            </template>
+            <br/>
+            <br/>
+            症状
+            <br/>
+            <el-checkbox-group v-model="info.p" @change="handleCheckedCitiesChange">
+                <el-checkbox v-for="(item, index)  in zOptions" :label="item" :key="item"><strong>{{index + 1}}</strong>{{ item }}</el-checkbox>
+            </el-checkbox-group>
+            <br/>
+            <br/>
+            一般情况
+            <br/>
+            <template v-for="item in General">
+                <el-input v-model="info[item.key]" style="width: 20%; margin-right: 3px;margin-bottom: 5px;" :placeholder="item.title"></el-input>
+            </template>
+            <br/>
+            <br/>
+            吸烟情况
+            <br/>
+            <template v-for="item in Smoking">
+                <template v-if="item.type && item.type == 'select'">
+                    <el-select v-model="info[item.key]" :placeholder="item.title" style="width: 20%; margin-right: 0px;margin-bottom: 5px;" >
+                        <el-option
+                          v-for="smokeing_item in item.state"
+                          :key="smokeing_item"
+                          :label="smokeing_item"
+                          :value="smokeing_item">
+                        </el-option>
+                      </el-select>
+                </template>
+                <template v-else>
+                    <el-input v-model="info[item.key]" style="width: 16%; margin-left: 15px;margin-bottom: 5px;" :placeholder="item.title"></el-input>
+                    <template v-if="item.unit">{{item.unit}}</template>
+                </template>
+            </template>
+            <br/>
+            <br/>
+            饮酒情况
+            <br/>
+            <template v-for="item in Drink">
+                <template v-if="item.type && item.type == 'select'">
+                    <el-select v-model="info[item.key]" :placeholder="item.title" style="width: 20%; margin-right: 0px;margin-bottom: 5px;" >
+                        <el-option
+                          v-for="smokeing_item in item.state"
+                          :key="smokeing_item"
+                          :label="smokeing_item"
+                          :value="smokeing_item">
+                        </el-option>
+                      </el-select>
+                </template>
+                <template v-else>
+                    <el-input v-model="info[item.key]" style="width: 16%; margin-left: 15px;margin-bottom: 5px;" :placeholder="item.title"></el-input>
+                    <template v-if="item.unit">{{item.unit}}</template>
+                </template>
+            </template>
+            <br/>
+            <br/>
+            脏器功能
+            <br/>
+            <div class="yachi" style="display: flex;">
+                <div class="leftbox">
+                    <el-checkbox-group v-model="info.p" @change="handleCheckedCitiesChange" style="width: 80px">
+                        <el-checkbox style="height: 40px;margin-bottom: 5px;" v-for="(item, index)  in teeth" 
+                        :label="item" :key="item"><strong>{{index + 1}}</strong>{{ item }}</el-checkbox>
+                    </el-checkbox-group>
+                </div>
+                <div class="rightbot">
+                    <div class="yc nomor" style="height: 40px;margin-bottom: 5px;">
 
-            mac
-            
+                    </div>
+                    <div class="yc lostTee">
+                        <template v-for="itme in lostTee">
+                            <el-input v-model="info[itme.key]" style="width: 20%; margin-right: 3px;margin-bottom: 5px;" :placeholder="itme.title"></el-input>
+                        </template>
+                    </div>
+      
+                    <div class="yc QTee">
+                        <template v-for="itme in QTee">
+                            <el-input v-model="info[itme.key]" style="width: 20%; margin-right: 3px;margin-bottom: 5px;" :placeholder="itme.title"></el-input>
+                        </template>
+                    </div>
+      
+                    <div class="yc YTee">
+                        <template v-for="itme in YTee">
+                            <el-input v-model="info[itme.key]" style="width: 20%; margin-right: 3px;margin-bottom: 5px;" :placeholder="itme.title"></el-input>
+                        </template>
+                    </div>
+                </div>
+            </div>
+  
+            <template v-for="item in Other">
+                <template v-if="item.type && item.type == 'select'">
+                    <el-select v-model="info[item.key]" :placeholder="item.title" style="width: 20%; margin-right: 5px;margin-bottom: 5px;" >
+                        <el-option
+                          v-for="smokeing_item in item.state"
+                          :key="smokeing_item"
+                          :label="smokeing_item"
+                          :value="smokeing_item">
+                        </el-option>
+                    </el-select>
+                </template>
+                <template v-else>
+                    <el-input v-model="info[item.key]" style="width: 16%; margin-right: 5px;margin-bottom: 5px;" :placeholder="item.title"></el-input>
+                    <template v-if="item.unit">{{item.unit}}</template>
+                </template>
+            </template>
+
         </el-main>
 
     </el-container>
@@ -69,7 +175,8 @@
 </div>
 
 <script>
-
+    const zOptions = ["无症状","头痛","头晕","心悸","胸闷","胸痛","慢性咳嗽","咳痰","呼吸困难","多饮","多尿",
+                        "体重下降","乏力","关节肿痛","视力模糊","手脚麻木","尿急","尿痛","便秘","腹泻","恶心呕吐","眼花","耳鸣","乳房胀痛","其他",];
     var Main = {
         data() {
             return {
@@ -80,6 +187,67 @@
                 form: {
                     f:'杨国珍',
                 },
+                info: {
+                    p: [],
+                },
+                BaseInfo:[
+                    { key:'f', title:"身份证号"},
+                    { key:'f', title:"姓名"},
+                    { key:'f', title:"行政村名"},
+                    { key:'f', title:"详细住址"},
+                    { key:'f', title:"体检日期"},
+                    { key:'f', title:"体检序号"},
+                    { key:'f', title:"联系电话"},
+                    { key:'f', title:"责任医生"},
+                ],
+                General:[
+                    { key:'f', title:"身高"},
+                    { key:'f', title:"体重"},
+                    { key:'f', title:"腰围"},
+                    { key:'f', title:"体质指数"},
+                    { key:'f', title:"收缩压"},
+                    { key:'f', title:"舒张压"},
+                ],
+                Smoking:[
+                    { type:"select", key:'f', title:"吸烟状况" , unit:'', state:['从不吸烟','吸烟',]},
+                    { type:"input", key:'f', title:"日吸烟量（平均）", unit:'支'},
+                    { type:"input", key:'f', title:"开始吸烟年龄", unit:'岁'},
+                    { type:"input", key:'f', title:"戒烟年龄", unit:'岁'},
+                ],
+                Drink:[
+                    { type:"select", key:'f', title:"饮酒频率" , unit:'', state:['从不','偶尔','从不吸烟','经常','每天']},
+                    { type:"input", key:'f', title:"日饮酒量", unit:'两'},
+                    { type:"select", key:'f', title:"是否戒酒", unit:'岁', state:['未戒','已戒',]},
+                    { type:"input", key:'f', title:"戒酒年龄", unit:'岁'},
+                    { type:"input", key:'f', title:"开始饮酒年龄", unit:'岁'},
+                    { type:"select", key:'f', title:"近一年内是否曾醉酒", unit:'岁', state:['是','否',]},
+                ],
+                Other:[ 
+                    { type:"input", key:'f', title:"左眼视力", unit:''},
+                    { type:"input", key:'f', title:"右眼视力", unit:''},
+                    { type:"select", key:'f', title:"听力", unit:'', state:['听见','听不清或者无法听清',]},
+                    { type:"select", key:'f', title:"运动功能", unit:'', state:['可顺利完成','无法独立完成任务一个动作',]}
+                ],
+                zOptions:zOptions,
+                teeth:["正常","缺齿","龋齿","义齿"],
+                lostTee:[
+                    { key:'f', title:"左上"},
+                    { key:'f', title:"左下"},
+                    { key:'f', title:"右上"},
+                    { key:'f', title:"右下"},
+                ],
+                QTee:[
+                    { key:'f', title:"左上"},
+                    { key:'f', title:"左下"},
+                    { key:'f', title:"右上"},
+                    { key:'f', title:"右下"},
+                ],
+                YTee:[
+                    { key:'f', title:"左上"},
+                    { key:'f', title:"左下"},
+                    { key:'f', title:"右上"},
+                    { key:'f', title:"右下"},
+                ],
             };
         },
         created() {
@@ -99,12 +267,17 @@
                         .then(function(response) {
                             // console.log(response.data.data.data)
                             self.fList = response.data.data.data
-
                             console.log(self.fList)
                         })
             },
             handleSelectionChange(){
             },
+            handleCheckedCitiesChange(){
+                console.log(this.info.p)
+                if( this.info.p.indexOf("无症状") > -1 ){
+                    this.info.p = ['无症状']
+                }
+            }
 
         }
     };
